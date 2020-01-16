@@ -73,6 +73,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DTO\CalculationDTO.cs" />
+    <Compile Include="DTO\DrawingDTO.cs" />
+    <Compile Include="DTO\InfoByFormuls.cs" />
+    <Compile Include="DTO\InfoByMonteCarlo.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

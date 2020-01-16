@@ -1,12 +1,9 @@
 ﻿using MonteKarloWPFApp1.Calcultion;
 using MonteKarloWPFApp1.Consts;
 using MonteKarloWPFApp1.Drawing;
-using System.Windows;
-using System.Collections;
+using MonteKarloWPFApp1.DTO;
 using System.Collections.Generic;
-using System.Windows.Media;
-using System.Windows.Shapes;
-using System.Linq;
+using System.Windows;
 
 namespace MonteKarloWPFApp1
 {
@@ -15,10 +12,8 @@ namespace MonteKarloWPFApp1
     /// </summary>
     public partial class MainWindow : Window
     {
-        private bool _isFigureDrawed;
-        private bool _isCalcExecuted;
-        private MyFigure _abcdFigure;
-        private MyFigure _aoeFigure;
+        private DrawingDTO _drawingDTO;
+        private CalculationDTO _calculationDTO;
 
         public MainWindow()
         {
@@ -27,8 +22,6 @@ namespace MonteKarloWPFApp1
 
         private void DrawFigure_Click(object sender, RoutedEventArgs e)
         {
-            MainCanvas.Children.Clear();
-
             int bc, ab;
             if (!(int.TryParse(BC.Text, out bc) && int.TryParse(AB.Text, out ab)))
             {
@@ -49,62 +42,102 @@ namespace MonteKarloWPFApp1
                 return;
             }
 
-            _abcdFigure = new MyFigure(new MyPoint[]
+            if (!(ab >= bc))
             {
-                new MyPoint(new System.Drawing.Point(spaceLeft, spaceBottom), "A"),
-                new MyPoint(new System.Drawing.Point(spaceLeft, spaceBottom + ab), "B"),
-                new MyPoint(new System.Drawing.Point(spaceLeft + bc, spaceBottom + ab), "C"),
-                new MyPoint(new System.Drawing.Point(spaceLeft + bc, spaceBottom), "D")
-            }, System.Windows.Media.Color.FromRgb(45, 67, 234));
-            var abcdFigureDrawer = new CustomDrawer(this, _abcdFigure, GlobalParams.ScaleNumber);
+                MessageBox.Show(Strings.ABIsntGreaterThanBC_Msg_Str);
+                return;
+            }
+
+            MainCanvas.Children.Clear();
+
+            var allPoints = new Dictionary<string, MyPoint>
+            {
+                { "A", new MyPoint(new System.Drawing.Point(spaceLeft, spaceBottom), "A") },
+                { "B", new MyPoint(new System.Drawing.Point(spaceLeft, spaceBottom + ab), "B") },
+                { "C", new MyPoint(new System.Drawing.Point(spaceLeft + bc, spaceBottom + ab), "C") },
+                { "D", new MyPoint(new System.Drawing.Point(spaceLeft + bc, spaceBottom), "D") },
+                { "O", new MyPoint(new System.Drawing.Point(spaceLeft, spaceBottom + ab - bc), "O") },
+                { "E", new MyPoint(new System.Drawing.Point(spaceLeft + bc, spaceBottom + ab - bc), "E") }
+            };
+
+            var colorFigure = GlobalParams.ColorFigure;
+            var scaleNumber = GlobalParams.ScaleNumber;
+            _drawingDTO = new DrawingDTO();
+
+            _drawingDTO.AbcdFigure = new MyFigure(new MyPoint[]
+            {
+                allPoints["A"],
+                allPoints["B"],
+                allPoints["C"],
+                allPoints["D"]
+            }, colorFigure);
+            var abcdFigureDrawer = new CustomDrawer(this, _drawingDTO.AbcdFigure, scaleNumber);
             abcdFigureDrawer.DrawLines();
 
-            _aoeFigure = new MyFigure(new MyPoint[]
+            _drawingDTO.AoeFigure = new MyFigure(new MyPoint[]
             {
-                new MyPoint(new System.Drawing.Point(spaceLeft, spaceBottom), "A"),
-                new MyPoint(new System.Drawing.Point(spaceLeft, spaceBottom + ab - bc), "O"),
-                new MyPoint(new System.Drawing.Point(spaceLeft + bc, spaceBottom + ab - bc), "E"),
-            }, System.Windows.Media.Color.FromRgb(0, 67, 0));
-            var oaeDrawerFigure = new CustomDrawer(this, _aoeFigure, GlobalParams.ScaleNumber);
+                allPoints["A"],
+                allPoints["O"],
+                allPoints["E"]
+            }, colorFigure);
+            var oaeDrawerFigure = new CustomDrawer(this, _drawingDTO.AoeFigure, scaleNumber);
             oaeDrawerFigure.DrawLines();
 
-            var bPoint = _abcdFigure.Points.First(mp => mp.Title == "B").Point;
-            var ePoint = _aoeFigure.Points.First(mp => mp.Title == "E").Point;
-            oaeDrawerFigure.DrawArc(bPoint, ePoint);
+            _drawingDTO.BeArcFigure = new MyFigure(new MyPoint[]
+            {
+                allPoints["B"],
+                allPoints["E"],
+            }, colorFigure);
+            var beArcDrawerFigure = new CustomDrawer(this, _drawingDTO.BeArcFigure, scaleNumber);
+            beArcDrawerFigure.DrawArc();
 
-            _isFigureDrawed = true;
-            _isCalcExecuted = false;
+            _calculationDTO = null;
         }
 
         private void MainCalc_Click(object sender, RoutedEventArgs e)
         {
-            if (!_isFigureDrawed)
+            if (_drawingDTO == null)
             {
                 MessageBox.Show(Strings.FigureIsntDrawed_Msg_Str);
                 return;
             }
 
-            IScuareCalculation squareCalculation = new SquareCalculationByFormuls(_abcdFigure, _aoeFigure);
-            var sByFormuls = squareCalculation.Execute(out long measuredTimeSByFormuls);
+            _calculationDTO = new CalculationDTO();
 
-            var dictionary = new Dictionary<double, long>();
-            squareCalculation = new SquareCalculationByMonteCarlo(_abcdFigure, _aoeFigure, 1000, 10);
+            IScuareCalculation squareCalculation = new SquareCalculationByFormuls(_drawingDTO.AbcdFigure, _drawingDTO.AoeFigure);
+            var sByFormuls = squareCalculation.Execute(out long measuredTimeSByFormuls);
+            _calculationDTO.InfoByFormuls = new InfoByFormuls
+            {
+                Square = sByFormuls,
+                MeasuredTime = measuredTimeSByFormuls
+            };
+
+            var amountOfPointsMC = GlobalParams.InitialAmountOfPointsMC;
+            var multiplierMC = GlobalParams.MultiplierMC;
+            squareCalculation = new SquareCalculationByMonteCarlo(_drawingDTO.AbcdFigure, _drawingDTO.AoeFigure, amountOfPointsMC, multiplierMC);
+
             for (int i = 0; i < 5; i++)
             {
                 var sByMonteCarlo = squareCalculation.Execute(out long measuredTimeSByMonteCarlo);
-                dictionary.Add(sByMonteCarlo, measuredTimeSByMonteCarlo);
+                _calculationDTO.InfoByMonteCarlo.Add(new InfoByMonteCarlo
+                {
+                    Square = sByMonteCarlo,
+                    MeasuredTime = measuredTimeSByMonteCarlo,
+                    AmountOPoints = amountOfPointsMC
+                });
+                amountOfPointsMC *= multiplierMC;
             }
-
-            _isCalcExecuted = true;
         }
 
         private void GetReport_Click(object sender, RoutedEventArgs e)
         {
-            if (!_isCalcExecuted)
+            if (_calculationDTO == null)
             {
                 MessageBox.Show(Strings.CalcIsntExecuted_Msg_Str);
                 return;
             }
+
+            
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Controls;
@@ -69,30 +70,36 @@ namespace MonteKarloWPFApp1.Drawing
             DrawPointTitles(_myFigure.Points);
         }
 
-        public void DrawArc(Point p1, Point p2)
+        public void DrawArc()
         {
+            var bPoint = _myFigure.Points.First(mp => mp.Title == "B").Point;
+            var ePoint = _myFigure.Points.First(mp => mp.Title == "E").Point;
+            var arcSize = new System.Windows.Size(54, 78);
+
             var g = new StreamGeometry();
             using (var gc = g.Open())
             {
                 gc.BeginFigure(
-                    startPoint: new System.Windows.Point(p1.X * _scaleNumber, p1.Y * _scaleNumber),
+                    startPoint: new System.Windows.Point(bPoint.X * _scaleNumber, bPoint.Y * _scaleNumber),
                     isFilled: false,
                     isClosed: false);
                 gc.ArcTo(
-                    point: new System.Windows.Point(p2.X * _scaleNumber, p2.Y * _scaleNumber),
-                    size: new System.Windows.Size(100, 100),
-                    rotationAngle: 0d,
-                    isLargeArc: false,
-                    sweepDirection: SweepDirection.Clockwise,
+                    point: new System.Windows.Point(ePoint.X * _scaleNumber, ePoint.Y * _scaleNumber),
+                    size: arcSize,
+                    rotationAngle: 5,
+                    isLargeArc: true,
+                    sweepDirection: SweepDirection.Counterclockwise,
                     isStroked: true,
                     isSmoothJoin: false);
             }
+
             var path = new Path
             {
-                Stroke = System.Windows.Media.Brushes.Black,
+                Stroke = _colorStroke,
                 StrokeThickness = 1,
                 Data = g
             };
+
             _mainWindow.MainCanvas.Children.Add(path);
         }
     }
