@@ -8,7 +8,7 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Button Content="Отрисовать фигуру" Name="DrawFigure" HorizontalAlignment="Left" Margin="499,125,0,0" VerticalAlignment="Top" Width="195" Height="40" Click="DrawFigure_Click"/>
-        <Canvas RenderTransform="1 0 0 -1 0 0" Background="Pink" Name="MainCanvas" HorizontalAlignment="Left" Height="399" Margin="13,408,0,-387" VerticalAlignment="Top" Width="475"/>
+        <Canvas RenderTransform="1 0 0 -1 0 0" Background="Pink" Name="MainCanvas" HorizontalAlignment="Left" Height="399" Margin="10,407,0,-386" VerticalAlignment="Top" Width="475"/>
         <Button Content="Выполнить расчеты" x:Name="MainCalc" HorizontalAlignment="Left" Margin="499,215,0,0" VerticalAlignment="Top" Width="195" Height="40" Click="DrawFigure_Click"/>
         <TextBox HorizontalAlignment="Left" Name="BC" Height="23" Margin="531,10,0,0" TextWrapping="Wrap" Text="40" VerticalAlignment="Top" Width="163"/>
         <TextBox HorizontalAlignment="Left" Name="AB" Height="23" Margin="531,38,0,0" TextWrapping="Wrap" Text="90" VerticalAlignment="Top" Width="163"/>

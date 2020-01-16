@@ -1,4 +1,4 @@
-﻿namespace MonteKarloWPFApp1.Structure
+﻿namespace MonteKarloWPFApp1.Consts
 {
     public static class Strings
     {

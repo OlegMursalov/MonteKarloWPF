@@ -1,4 +1,5 @@
-﻿using MonteKarloWPFApp1.Structure;
+﻿using MonteKarloWPFApp1.Consts;
+using MonteKarloWPFApp1.Drawing;
 using System.Windows;
 
 namespace MonteKarloWPFApp1

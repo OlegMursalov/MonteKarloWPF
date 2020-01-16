@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MonteKarloWPFApp1.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
-namespace MonteKarloWPFApp1.Structure
+namespace MonteKarloWPFApp1.Drawing
 {
     public class CustomDrawer
     {
@@ -44,18 +45,9 @@ namespace MonteKarloWPFApp1.Structure
             }
         }
 
-        private Point[] ScalePoints(Point[] points)
+        private IEnumerable<Point> ScalePoints(IEnumerable<Point> points)
         {
-            var newPoints = new Point[points.Length];
-            for (int i = 0; i < points.Length; i++)
-            {
-                newPoints[i] = new Point
-                {
-                    X = points[i].X * _scaleNumber,
-                    Y = points[i].Y * _scaleNumber
-                }; 
-            }
-            return newPoints;
+            return points.Select(p => new Point(p.X * _scaleNumber, p.Y * _scaleNumber));
         }
 
         private void DrawPointTitles(MyPoint[] myPoints)
@@ -64,6 +56,7 @@ namespace MonteKarloWPFApp1.Structure
             {
                 var textBlock = new TextBlock();
                 textBlock.Text = myPoints[i].Title;
+                textBlock.RenderTransform = new ScaleTransform { ScaleY = -1 };
                 Canvas.SetLeft(textBlock, myPoints[i].Point.X * _scaleNumber);
                 Canvas.SetTop(textBlock, myPoints[i].Point.Y * _scaleNumber);
                 _mainWindow.MainCanvas.Children.Add(textBlock);
@@ -72,9 +65,9 @@ namespace MonteKarloWPFApp1.Structure
 
         public void Draw()
         {
-            var points = _myFigure.Points.Select(i => i.Point).ToArray();
+            var points = _myFigure.Points.Select(i => i.Point);
             points = ScalePoints(points);
-            DrawLinesByPoints(points);
+            DrawLinesByPoints(points.ToArray());
             DrawPointTitles(_myFigure.Points);
         }
     }

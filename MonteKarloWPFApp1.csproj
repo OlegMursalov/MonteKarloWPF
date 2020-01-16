@@ -56,10 +56,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Structure\CustomDrawer.cs" />
-    <Compile Include="Structure\MyFigure.cs" />
-    <Compile Include="Structure\MyPoint.cs" />
-    <Compile Include="Structure\Strings.cs" />
+    <Compile Include="Drawing\CustomDrawer.cs" />
+    <Compile Include="Drawing\MyFigure.cs" />
+    <Compile Include="Drawing\MyPoint.cs" />
+    <Compile Include="Consts\Strings.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -68,6 +68,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Helpers\CoordinatesTransformatorHelper.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -99,5 +100,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
