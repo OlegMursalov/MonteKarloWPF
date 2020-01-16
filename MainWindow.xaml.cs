@@ -2,6 +2,8 @@
 using MonteKarloWPFApp1.Consts;
 using MonteKarloWPFApp1.Drawing;
 using System.Windows;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace MonteKarloWPFApp1
 {
@@ -75,8 +77,16 @@ namespace MonteKarloWPFApp1
                 return;
             }
 
-            var squareCalculationByFormuls = new SquareCalculationByFormuls(_abcdFigure, _aoeFigure);
-            var sByFormuls = squareCalculationByFormuls.Execute();
+            IScuareCalculation squareCalculation = new SquareCalculationByFormuls(_abcdFigure, _aoeFigure);
+            var sByFormuls = squareCalculation.Execute(out long measuredTimeSByFormuls);
+
+            var dictionary = new Dictionary<double, long>();
+            squareCalculation = new SquareCalculationByMonteCarlo(_abcdFigure, _aoeFigure, 1000, 10);
+            for (int i = 0; i < 5; i++)
+            {
+                var sByMonteCarlo = squareCalculation.Execute(out long measuredTimeSByMonteCarlo);
+                dictionary.Add(sByMonteCarlo, measuredTimeSByMonteCarlo);
+            }
 
             _isCalcExecuted = true;
         }
