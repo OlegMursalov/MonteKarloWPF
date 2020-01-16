@@ -56,6 +56,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Calcultion\SquareCalculation.cs" />
+    <Compile Include="Calcultion\SquareCalculationByFormuls.cs" />
+    <Compile Include="Calcultion\TimeCalculation.cs" />
     <Compile Include="Consts\GlobalParams.cs" />
     <Compile Include="Drawing\CustomDrawer.cs" />
     <Compile Include="Drawing\MyFigure.cs" />
@@ -100,8 +103,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Calcultion\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

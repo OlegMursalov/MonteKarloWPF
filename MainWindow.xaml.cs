@@ -1,4 +1,5 @@
-﻿using MonteKarloWPFApp1.Consts;
+﻿using MonteKarloWPFApp1.Calcultion;
+using MonteKarloWPFApp1.Consts;
 using MonteKarloWPFApp1.Drawing;
 using System.Windows;
 
@@ -11,6 +12,8 @@ namespace MonteKarloWPFApp1
     {
         private bool _isFigureDrawed;
         private bool _isCalcExecuted;
+        private MyFigure _abcdFigure;
+        private MyFigure _aoeFigure;
 
         public MainWindow()
         {
@@ -41,23 +44,23 @@ namespace MonteKarloWPFApp1
                 return;
             }
 
-            var abcdFigure = new MyFigure(new MyPoint[]
+            _abcdFigure = new MyFigure(new MyPoint[]
             {
                 new MyPoint(new System.Drawing.Point(spaceLeft, spaceBottom), "A"),
                 new MyPoint(new System.Drawing.Point(spaceLeft, spaceBottom + ab), "B"),
                 new MyPoint(new System.Drawing.Point(spaceLeft + bc, spaceBottom + ab), "C"),
                 new MyPoint(new System.Drawing.Point(spaceLeft + bc, spaceBottom), "D")
             }, System.Windows.Media.Color.FromRgb(45, 67, 234));
-            var abcdFigureDrawer = new CustomDrawer(this, abcdFigure, GlobalParams.ScaleNumber);
+            var abcdFigureDrawer = new CustomDrawer(this, _abcdFigure, GlobalParams.ScaleNumber);
             abcdFigureDrawer.Draw();
 
-            var aoeFigure = new MyFigure(new MyPoint[]
+            _aoeFigure = new MyFigure(new MyPoint[]
             {
                 new MyPoint(new System.Drawing.Point(spaceLeft, spaceBottom), "A"),
                 new MyPoint(new System.Drawing.Point(spaceLeft, spaceBottom + ab - bc), "O"),
                 new MyPoint(new System.Drawing.Point(spaceLeft + bc, spaceBottom + ab - bc), "E"),
             }, System.Windows.Media.Color.FromRgb(0, 67, 0));
-            var oaeDrawerFigure = new CustomDrawer(this, aoeFigure, GlobalParams.ScaleNumber);
+            var oaeDrawerFigure = new CustomDrawer(this, _aoeFigure, GlobalParams.ScaleNumber);
             oaeDrawerFigure.Draw();
 
             _isFigureDrawed = true;
@@ -69,9 +72,11 @@ namespace MonteKarloWPFApp1
             if (!_isFigureDrawed)
             {
                 MessageBox.Show(Strings.FigureIsntDrawed_Msg_Str);
+                return;
             }
 
-            
+            var squareCalculationByFormuls = new SquareCalculationByFormuls(_abcdFigure, _aoeFigure);
+            var sByFormuls = squareCalculationByFormuls.Execute();
 
             _isCalcExecuted = true;
         }
@@ -81,6 +86,7 @@ namespace MonteKarloWPFApp1
             if (!_isCalcExecuted)
             {
                 MessageBox.Show(Strings.CalcIsntExecuted_Msg_Str);
+                return;
             }
         }
     }
