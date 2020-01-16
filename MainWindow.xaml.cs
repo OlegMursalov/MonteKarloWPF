@@ -4,6 +4,9 @@ using MonteKarloWPFApp1.Drawing;
 using System.Windows;
 using System.Collections;
 using System.Collections.Generic;
+using System.Windows.Media;
+using System.Windows.Shapes;
+using System.Linq;
 
 namespace MonteKarloWPFApp1
 {
@@ -54,7 +57,7 @@ namespace MonteKarloWPFApp1
                 new MyPoint(new System.Drawing.Point(spaceLeft + bc, spaceBottom), "D")
             }, System.Windows.Media.Color.FromRgb(45, 67, 234));
             var abcdFigureDrawer = new CustomDrawer(this, _abcdFigure, GlobalParams.ScaleNumber);
-            abcdFigureDrawer.Draw();
+            abcdFigureDrawer.DrawLines();
 
             _aoeFigure = new MyFigure(new MyPoint[]
             {
@@ -63,7 +66,11 @@ namespace MonteKarloWPFApp1
                 new MyPoint(new System.Drawing.Point(spaceLeft + bc, spaceBottom + ab - bc), "E"),
             }, System.Windows.Media.Color.FromRgb(0, 67, 0));
             var oaeDrawerFigure = new CustomDrawer(this, _aoeFigure, GlobalParams.ScaleNumber);
-            oaeDrawerFigure.Draw();
+            oaeDrawerFigure.DrawLines();
+
+            var bPoint = _abcdFigure.Points.First(mp => mp.Title == "B").Point;
+            var ePoint = _aoeFigure.Points.First(mp => mp.Title == "E").Point;
+            oaeDrawerFigure.DrawArc(bPoint, ePoint);
 
             _isFigureDrawed = true;
             _isCalcExecuted = false;

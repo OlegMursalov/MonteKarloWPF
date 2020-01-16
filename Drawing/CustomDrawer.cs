@@ -61,12 +61,39 @@ namespace MonteKarloWPFApp1.Drawing
             }
         }
 
-        public void Draw()
+        public void DrawLines()
         {
             var points = _myFigure.Points.Select(i => i.Point);
             points = ScalePoints(points);
             DrawLinesByPoints(points.ToArray());
             DrawPointTitles(_myFigure.Points);
+        }
+
+        public void DrawArc(Point p1, Point p2)
+        {
+            var g = new StreamGeometry();
+            using (var gc = g.Open())
+            {
+                gc.BeginFigure(
+                    startPoint: new System.Windows.Point(p1.X * _scaleNumber, p1.Y * _scaleNumber),
+                    isFilled: false,
+                    isClosed: false);
+                gc.ArcTo(
+                    point: new System.Windows.Point(p2.X * _scaleNumber, p2.Y * _scaleNumber),
+                    size: new System.Windows.Size(100, 100),
+                    rotationAngle: 0d,
+                    isLargeArc: false,
+                    sweepDirection: SweepDirection.Clockwise,
+                    isStroked: true,
+                    isSmoothJoin: false);
+            }
+            var path = new Path
+            {
+                Stroke = System.Windows.Media.Brushes.Black,
+                StrokeThickness = 1,
+                Data = g
+            };
+            _mainWindow.MainCanvas.Children.Add(path);
         }
     }
 }

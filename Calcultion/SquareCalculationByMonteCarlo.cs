@@ -57,3 +57,4 @@ namespace MonteKarloWPFApp1.Calcultion
             }
         }
     }
+}
