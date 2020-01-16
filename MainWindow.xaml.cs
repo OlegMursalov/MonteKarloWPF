@@ -9,35 +9,35 @@ namespace MonteKarloWPFApp1
     /// </summary>
     public partial class MainWindow : Window
     {
+        private bool _isFigureDrawed;
+        private bool _isCalcExecuted;
+
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        private void ClearMainCanvas_Click(object sender, RoutedEventArgs e)
-        {
-            MainCanvas.Children.Clear();
-        }
-
         private void DrawFigure_Click(object sender, RoutedEventArgs e)
         {
+            MainCanvas.Children.Clear();
+
             int bc, ab;
             if (!(int.TryParse(BC.Text, out bc) && int.TryParse(AB.Text, out ab)))
             {
-                MessageBox.Show(Strings.ArgExFormTextBoxesBC_AB_Str);
+                MessageBox.Show(Strings.FormTextBoxesBC_AB_Msg_Str);
                 return;
             }
 
             int spaceLeft, spaceBottom;
             if (!(int.TryParse(SpaceLeft.Text, out spaceLeft) && int.TryParse(SpaceBottom.Text, out spaceBottom)))
             {
-                MessageBox.Show(Strings.ArgExFormSpaces_Str);
+                MessageBox.Show(Strings.FormSpacesMsg_Str);
                 return;
             }
 
             if (!(spaceLeft > 0 && spaceBottom > 0 && spaceLeft <= 20 && spaceBottom <= 20))
             {
-                MessageBox.Show(Strings.ArgExFormSpaces_Restricts_Str);
+                MessageBox.Show(Strings.FormSpaces_RestrictsMsg_Str);
                 return;
             }
 
@@ -48,7 +48,7 @@ namespace MonteKarloWPFApp1
                 new MyPoint(new System.Drawing.Point(spaceLeft + bc, spaceBottom + ab), "C"),
                 new MyPoint(new System.Drawing.Point(spaceLeft + bc, spaceBottom), "D")
             }, System.Windows.Media.Color.FromRgb(45, 67, 234));
-            var abcdFigureDrawer = new CustomDrawer(this, abcdFigure, 3);
+            var abcdFigureDrawer = new CustomDrawer(this, abcdFigure, GlobalParams.ScaleNumber);
             abcdFigureDrawer.Draw();
 
             var aoeFigure = new MyFigure(new MyPoint[]
@@ -57,11 +57,31 @@ namespace MonteKarloWPFApp1
                 new MyPoint(new System.Drawing.Point(spaceLeft, spaceBottom + ab - bc), "O"),
                 new MyPoint(new System.Drawing.Point(spaceLeft + bc, spaceBottom + ab - bc), "E"),
             }, System.Windows.Media.Color.FromRgb(0, 67, 0));
-            var oaeDrawerFigure = new CustomDrawer(this, aoeFigure, 3);
+            var oaeDrawerFigure = new CustomDrawer(this, aoeFigure, GlobalParams.ScaleNumber);
             oaeDrawerFigure.Draw();
 
-            /*var customDrawerPartOfCircle = new CustomDrawer(this, MyFigure.OBE, System.Windows.Media.Color.FromRgb(198, 89, 0), 3);
-            customDrawerPartOfCircle.Draw();*/
+            _isFigureDrawed = true;
+            _isCalcExecuted = false;
+        }
+
+        private void MainCalc_Click(object sender, RoutedEventArgs e)
+        {
+            if (!_isFigureDrawed)
+            {
+                MessageBox.Show(Strings.FigureIsntDrawed_Msg_Str);
+            }
+
+            
+
+            _isCalcExecuted = true;
+        }
+
+        private void GetReport_Click(object sender, RoutedEventArgs e)
+        {
+            if (!_isCalcExecuted)
+            {
+                MessageBox.Show(Strings.CalcIsntExecuted_Msg_Str);
+            }
         }
     }
 }

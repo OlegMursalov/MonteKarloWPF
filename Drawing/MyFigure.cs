@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-namespace MonteKarloWPFApp1.Drawing
+﻿namespace MonteKarloWPFApp1.Drawing
 {
     public class MyFigure
     {
