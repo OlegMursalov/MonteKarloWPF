@@ -1,13 +1,6 @@
-﻿using MonteKarloWPFApp1.Calcultion;
-using MonteKarloWPFApp1.Consts;
-using MonteKarloWPFApp1.Drawing;
-using MonteKarloWPFApp1.DTO;
+﻿using MonteKarloWPFApp1.DTO;
 using MonteKarloWPFApp1.Structure;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace MonteKarloWPFApp1

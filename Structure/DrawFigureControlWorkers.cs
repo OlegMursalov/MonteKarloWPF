@@ -5,6 +5,7 @@ using MonteKarloWPFApp1.UIHelpers;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace MonteKarloWPFApp1.Structure
 {
@@ -25,20 +26,33 @@ namespace MonteKarloWPFApp1.Structure
 
         public void MainBackgroundWorker_DrawFigure_DoWork(object sender, DoWorkEventArgs e)
         {
+            var isQuit = false;
+
             var formBlocker = new FormBlocker(_mainWindow);
             formBlocker.Equals(true);
 
-            int bc, ab;
-            if (!(int.TryParse(_mainWindow.BC.Text, out bc) && int.TryParse(_mainWindow.AB.Text, out ab)))
+            int bc = 0, ab = 0;
+            _mainWindow.Dispatcher.Invoke(() =>
             {
-                MessageBox.Show(Strings.FormTextBoxesBC_AB_Msg_Str);
-                return;
-            }
+                if (!(int.TryParse(_mainWindow.BC.Text, out bc) && int.TryParse(_mainWindow.AB.Text, out ab)))
+                {
+                    MessageBox.Show(Strings.FormTextBoxesBC_AB_Msg_Str);
+                    isQuit = true;
+                }
+            });
 
-            int spaceLeft, spaceBottom;
-            if (!(int.TryParse(_mainWindow.SpaceLeft.Text, out spaceLeft) && int.TryParse(_mainWindow.SpaceBottom.Text, out spaceBottom)))
+            int spaceLeft = 0, spaceBottom = 0;
+            _mainWindow.Dispatcher.Invoke(() =>
             {
-                MessageBox.Show(Strings.FormSpacesMsg_Str);
+                if (!(int.TryParse(_mainWindow.SpaceLeft.Text, out spaceLeft) && int.TryParse(_mainWindow.SpaceBottom.Text, out spaceBottom)))
+                {
+                    MessageBox.Show(Strings.FormSpacesMsg_Str);
+                    isQuit = true;
+                }
+            });
+
+            if (isQuit)
+            {
                 return;
             }
 
@@ -54,7 +68,7 @@ namespace MonteKarloWPFApp1.Structure
                 return;
             }
 
-            _mainWindow.MainCanvas.Children.Clear();
+            _mainWindow.Dispatcher.Invoke(() => _mainWindow.MainCanvas.Children.Clear());
 
             _mainWindow.DrawingDTO = new DrawingDTO();
 

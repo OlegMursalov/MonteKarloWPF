@@ -1,5 +1,6 @@
 ﻿using MonteKarloWPFApp1.Calcultion;
 using MonteKarloWPFApp1.Consts;
+using MonteKarloWPFApp1.Drawing;
 using MonteKarloWPFApp1.DTO;
 using MonteKarloWPFApp1.UIHelpers;
 using System.Collections.Generic;
@@ -24,12 +25,22 @@ namespace MonteKarloWPFApp1.Structure
 
         public void MainBackgroundWorker_MainCalc_DoWork(object sender, DoWorkEventArgs e)
         {
+            var isQuit = false;
+
             var formBlocker = new FormBlocker(_mainWindow);
             formBlocker.Equals(true);
 
-            if (_mainWindow.DrawingDTO == null)
+            _mainWindow.Dispatcher.Invoke(() =>
             {
-                MessageBox.Show(Strings.FigureIsntDrawed_Msg_Str);
+                if (_mainWindow.DrawingDTO == null)
+                {
+                    MessageBox.Show(Strings.FigureIsntDrawed_Msg_Str);
+                    isQuit = true;
+                }
+            });
+
+            if (isQuit)
+            {
                 return;
             }
 
@@ -51,7 +62,7 @@ namespace MonteKarloWPFApp1.Structure
             {
                 var sByMonteCarlo = squareCalculationByMonteCarlo.Execute(out long measuredTimeSByMonteCarlo, out IEnumerable<Point> randPoints);
 
-                // CustomDrawer.DrawPoints(MainCanvas, GlobalParams.ScaleNumber, randPoints); // Рисование
+                CustomDrawer.DrawPoints(_mainWindow.Dispatcher, _mainWindow.MainCanvas, GlobalParams.ScaleNumber, randPoints); // Рисование
 
                 _mainWindow.CalculationDTO.InfoByMonteCarlo.Add(new InfoByMonteCarlo
                 {

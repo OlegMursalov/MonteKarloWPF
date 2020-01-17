@@ -3,7 +3,7 @@ using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
-
+using System.Windows.Threading;
 using Point = System.Windows.Point;
 
 namespace MonteKarloWPFApp1.Drawing
@@ -28,20 +28,23 @@ namespace MonteKarloWPFApp1.Drawing
         /// </summary>
         private void DrawLinesByPoints(Point[] points)
         {
-            for (int i = 0; i < points.Length; i++)
+            _mainWindow.Dispatcher.Invoke(() =>
             {
-                var p1 = points[i];
-                var p2 = i != points.Length - 1 ? points[i + 1] : points[0];
-                var line = new Line
+                for (int i = 0; i < points.Length; i++)
                 {
-                    X1 = p1.X,
-                    Y1 = p1.Y,
-                    X2 = p2.X,
-                    Y2 = p2.Y
-                };
-                line.Stroke = _colorStroke;
-                _mainWindow.MainCanvas.Children.Add(line);
-            }
+                    var p1 = points[i];
+                    var p2 = i != points.Length - 1 ? points[i + 1] : points[0];
+                    var line = new Line
+                    {
+                        X1 = p1.X,
+                        Y1 = p1.Y,
+                        X2 = p2.X,
+                        Y2 = p2.Y
+                    };
+                    line.Stroke = _colorStroke;
+                    _mainWindow.MainCanvas.Children.Add(line);
+                }
+            });
         }
 
         private IEnumerable<Point> ScalePoints(IEnumerable<Point> points)
@@ -51,15 +54,18 @@ namespace MonteKarloWPFApp1.Drawing
 
         private void DrawPointTitles(MyPoint[] myPoints)
         {
-            for (int i = 0; i < myPoints.Length; i++)
+            _mainWindow.Dispatcher.Invoke(() =>
             {
-                var textBlock = new TextBlock();
-                textBlock.Text = myPoints[i].Title;
-                textBlock.RenderTransform = new ScaleTransform { ScaleY = -1 };
-                Canvas.SetLeft(textBlock, myPoints[i].Point.X * _scaleNumber);
-                Canvas.SetTop(textBlock, myPoints[i].Point.Y * _scaleNumber);
-                _mainWindow.MainCanvas.Children.Add(textBlock);
-            }
+                for (int i = 0; i < myPoints.Length; i++)
+                {
+                    var textBlock = new TextBlock();
+                    textBlock.Text = myPoints[i].Title;
+                    textBlock.RenderTransform = new ScaleTransform { ScaleY = -1 };
+                    Canvas.SetLeft(textBlock, myPoints[i].Point.X * _scaleNumber);
+                    Canvas.SetTop(textBlock, myPoints[i].Point.Y * _scaleNumber);
+                    _mainWindow.MainCanvas.Children.Add(textBlock);
+                }
+            });
         }
 
         public void DrawLines()
@@ -100,10 +106,10 @@ namespace MonteKarloWPFApp1.Drawing
                 Data = g
             };
 
-            _mainWindow.MainCanvas.Children.Add(path);
+            _mainWindow.Dispatcher.Invoke(() => _mainWindow.MainCanvas.Children.Add(path));
         }
 
-        public static void DrawPoints(Canvas canvas, int scaleNumber, IEnumerable<Point> points)
+        public static void DrawPoints(Dispatcher dispatcher, Canvas canvas, int scaleNumber, IEnumerable<Point> points)
         {
             foreach (var point in points)
             {
@@ -113,7 +119,7 @@ namespace MonteKarloWPFApp1.Drawing
                 ellipse.Stroke = new SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 0, 0));
                 Canvas.SetLeft(ellipse, point.X * scaleNumber);
                 Canvas.SetTop(ellipse, point.Y * scaleNumber);
-                canvas.Children.Add(ellipse);
+                dispatcher.Invoke(() => canvas.Children.Add(ellipse));
             }
         }
     }
