@@ -3,8 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using Point = System.Windows.Point;
 
 namespace MonteKarloWPFApp1.Calcultion
 {
@@ -91,7 +91,7 @@ namespace MonteKarloWPFApp1.Calcultion
             }
         }
 
-        private bool CheckPointInTriangle(int m1, int m2, int m3)
+        private bool CheckPointInTriangle(double m1, double m2, double m3)
         {
             // Точка лежит на одной из сторон
             var boolPart1 = (m1 == 0 && m2 != 0 && m3 != 0) || (m1 != 0 && m2 == 0 && m3 != 0) || (m1 != 0 && m2 != 0 && m3 == 0);
@@ -100,6 +100,9 @@ namespace MonteKarloWPFApp1.Calcultion
             return boolPart1 || boolPart2;
         }
 
+        /// <summary>
+        /// Рандомим точки (точки имеют координаты X и Y вещественных чисел до тысячной)
+        /// </summary>
         private IEnumerable<Point> GenerateRandPoints(int amountOfPoints)
         {
             var rand = new Random();
@@ -110,9 +113,10 @@ namespace MonteKarloWPFApp1.Calcultion
 
             for (int i = 0; i < amountOfPoints; i++)
             {
-                var x = rand.Next(aPoint.X, dPoint.X);
-                var y = rand.Next(aPoint.Y, bPoint.Y);
-                yield return new Point(x, y);
+                var x = rand.Next((int)aPoint.X, (int)dPoint.X);
+                var y = rand.Next((int)aPoint.Y, (int)bPoint.Y);
+                var dvR = rand.Next(1, 1000) * 0.001;
+                yield return new Point(x + dvR, y + dvR);
             }
         }
     }

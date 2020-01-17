@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+
+using Point = System.Windows.Point;
 
 namespace MonteKarloWPFApp1.Drawing
 {
@@ -80,11 +80,11 @@ namespace MonteKarloWPFApp1.Drawing
             using (var gc = g.Open())
             {
                 gc.BeginFigure(
-                    startPoint: new System.Windows.Point(bPoint.X * _scaleNumber, bPoint.Y * _scaleNumber),
+                    startPoint: new Point(bPoint.X * _scaleNumber, bPoint.Y * _scaleNumber),
                     isFilled: false,
                     isClosed: false);
                 gc.ArcTo(
-                    point: new System.Windows.Point(ePoint.X * _scaleNumber, ePoint.Y * _scaleNumber),
+                    point: new Point(ePoint.X * _scaleNumber, ePoint.Y * _scaleNumber),
                     size: arcSize,
                     rotationAngle: 5,
                     isLargeArc: true,

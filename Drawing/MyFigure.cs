@@ -1,11 +1,13 @@
-﻿namespace MonteKarloWPFApp1.Drawing
+﻿using System.Windows.Media;
+
+namespace MonteKarloWPFApp1.Drawing
 {
     public class MyFigure
     {
         public MyPoint[] Points { get; }
-        public System.Windows.Media.Color ColorStroke { get; }
+        public Color ColorStroke { get; }
 
-        public MyFigure(MyPoint[] points, System.Windows.Media.Color colorStroke)
+        public MyFigure(MyPoint[] points, Color colorStroke)
         {
             Points = points;
             ColorStroke = colorStroke;

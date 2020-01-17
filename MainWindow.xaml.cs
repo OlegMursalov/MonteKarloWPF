@@ -56,12 +56,12 @@ namespace MonteKarloWPFApp1
 
             var allPoints = new Dictionary<string, MyPoint>
             {
-                { "A", new MyPoint(new System.Drawing.Point(spaceLeft, spaceBottom), "A") },
-                { "B", new MyPoint(new System.Drawing.Point(spaceLeft, spaceBottom + ab), "B") },
-                { "C", new MyPoint(new System.Drawing.Point(spaceLeft + bc, spaceBottom + ab), "C") },
-                { "D", new MyPoint(new System.Drawing.Point(spaceLeft + bc, spaceBottom), "D") },
-                { "O", new MyPoint(new System.Drawing.Point(spaceLeft, spaceBottom + ab - bc), "O") },
-                { "E", new MyPoint(new System.Drawing.Point(spaceLeft + bc, spaceBottom + ab - bc), "E") }
+                { "A", new MyPoint(new Point(spaceLeft, spaceBottom), "A") },
+                { "B", new MyPoint(new Point(spaceLeft, spaceBottom + ab), "B") },
+                { "C", new MyPoint(new Point(spaceLeft + bc, spaceBottom + ab), "C") },
+                { "D", new MyPoint(new Point(spaceLeft + bc, spaceBottom), "D") },
+                { "O", new MyPoint(new Point(spaceLeft, spaceBottom + ab - bc), "O") },
+                { "E", new MyPoint(new Point(spaceLeft + bc, spaceBottom + ab - bc), "E") }
             };
 
             var colorFigure = GlobalParams.ColorFigure;
@@ -125,7 +125,7 @@ namespace MonteKarloWPFApp1
 
                 for (int i = 0; i < 5; i++)
                 {
-                    var sByMonteCarlo = squareCalculationByMonteCarlo.Execute(out long measuredTimeSByMonteCarlo, out IEnumerable<System.Drawing.Point> randPoints);
+                    var sByMonteCarlo = squareCalculationByMonteCarlo.Execute(out long measuredTimeSByMonteCarlo, out IEnumerable<Point> randPoints);
 
                     // CustomDrawer.DrawPoints(MainCanvas, GlobalParams.ScaleNumber, randPoints); // Рисование
 
