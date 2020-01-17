@@ -2,7 +2,10 @@
 using MonteKarloWPFApp1.Consts;
 using MonteKarloWPFApp1.Drawing;
 using MonteKarloWPFApp1.DTO;
+using System;
 using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace MonteKarloWPFApp1
@@ -96,39 +99,45 @@ namespace MonteKarloWPFApp1
             _reportDTO = null;
         }
 
-        private void MainCalc_Click(object sender, RoutedEventArgs e)
+        private async void MainCalc_Click(object sender, RoutedEventArgs e)
         {
-            if (_drawingDTO == null)
+            await this.Dispatcher.InvokeAsync(() =>
             {
-                MessageBox.Show(Strings.FigureIsntDrawed_Msg_Str);
-                return;
-            }
-
-            _calculationDTO = new CalculationDTO();
-
-            IScuareCalculation squareCalculation = new SquareCalculationByFormuls(_drawingDTO.AbcdFigure, _drawingDTO.AoeFigure);
-            var sByFormuls = squareCalculation.Execute(out long measuredTimeSByFormuls);
-            _calculationDTO.InfoByFormuls = new InfoByFormuls
-            {
-                Square = sByFormuls,
-                MeasuredTime = measuredTimeSByFormuls
-            };
-
-            var amountOfPointsMC = GlobalParams.InitialAmountOfPointsMC;
-            var multiplierMC = GlobalParams.MultiplierMC;
-            squareCalculation = new SquareCalculationByMonteCarlo(_drawingDTO.AbcdFigure, _drawingDTO.AoeFigure, amountOfPointsMC, multiplierMC);
-
-            for (int i = 0; i < 5; i++)
-            {
-                var sByMonteCarlo = squareCalculation.Execute(out long measuredTimeSByMonteCarlo);
-                _calculationDTO.InfoByMonteCarlo.Add(new InfoByMonteCarlo
+                if (_drawingDTO == null)
                 {
-                    Square = sByMonteCarlo,
-                    MeasuredTime = measuredTimeSByMonteCarlo,
-                    AmountOPoints = amountOfPointsMC
-                });
-                amountOfPointsMC *= multiplierMC;
-            }
+                    MessageBox.Show(Strings.FigureIsntDrawed_Msg_Str);
+                    return;
+                }
+
+                _calculationDTO = new CalculationDTO();
+
+                var squareCalculationByFormuls = new SquareCalculationByFormuls(_drawingDTO.AbcdFigure, _drawingDTO.AoeFigure);
+                var sByFormuls = squareCalculationByFormuls.Execute(out long measuredTimeSByFormuls);
+                _calculationDTO.InfoByFormuls = new InfoByFormuls
+                {
+                    Square = sByFormuls,
+                    MeasuredTime = measuredTimeSByFormuls
+                };
+
+                var amountOfPointsMC = GlobalParams.InitialAmountOfPointsMC;
+                var multiplierMC = GlobalParams.MultiplierMC;
+                var squareCalculationByMonteCarlo = new SquareCalculationByMonteCarlo(_drawingDTO.AbcdFigure, _drawingDTO.AoeFigure, amountOfPointsMC, multiplierMC);
+
+                for (int i = 0; i < 5; i++)
+                {
+                    var sByMonteCarlo = squareCalculationByMonteCarlo.Execute(out long measuredTimeSByMonteCarlo, out IEnumerable<System.Drawing.Point> randPoints);
+
+                    // CustomDrawer.DrawPoints(MainCanvas, GlobalParams.ScaleNumber, randPoints); // Рисование
+
+                    _calculationDTO.InfoByMonteCarlo.Add(new InfoByMonteCarlo
+                    {
+                        Square = sByMonteCarlo,
+                        MeasuredTime = measuredTimeSByMonteCarlo,
+                        AmountOfPoints = amountOfPointsMC
+                    });
+                    amountOfPointsMC *= multiplierMC;
+                }
+            });
         }
 
         private void GetReport_Click(object sender, RoutedEventArgs e)
@@ -139,7 +148,18 @@ namespace MonteKarloWPFApp1
                 return;
             }
 
-            
+            var sb = new StringBuilder();
+            sb.AppendLine($"Отчет за {DateTime.Now}");
+            sb.AppendLine($"Площадь, вычисленная математически - {_calculationDTO.InfoByFormuls.Square}");
+            sb.AppendLine($"Время, потраченное на вычисление площади математически - {_calculationDTO.InfoByFormuls.MeasuredTime} мс");
+            sb.AppendLine($"Площадь, вычисленная методом Монте Карло:");
+            foreach (var item in _calculationDTO.InfoByMonteCarlo)
+            {
+                var offsetS = (Math.Abs(_calculationDTO.InfoByFormuls.Square - item.Square) / _calculationDTO.InfoByFormuls.Square) * 100;
+                sb.AppendLine($"Кол-во сгенерированых точек - {item.AmountOfPoints}, площадь - {item.Square}, время - {item.MeasuredTime} мс, погрешность - {offsetS} %");
+            }
+
+            MessageBox.Show(sb.ToString(), "Выполненные расчеты");
         }
     }
 }

@@ -8,12 +8,13 @@ using System.Threading.Tasks;
 
 namespace MonteKarloWPFApp1.Calcultion
 {
-    public class SquareCalculationByMonteCarlo : IScuareCalculation
+    public class SquareCalculationByMonteCarlo
     {
         private MyFigure _abcdFigure;
         private MyFigure _aoeFigure;
         private int _amountOfPoints;
         private int _multiplier;
+        private double _rectSquare;
 
         /// <summary>
         /// SquareCalculationByMonteCarlo
@@ -28,28 +29,38 @@ namespace MonteKarloWPFApp1.Calcultion
             _aoeFigure = aoeFigure;
             _amountOfPoints = initialAmountOfPoints;
             _multiplier = multiplier;
+
+            var aPoint = _abcdFigure.Points.First(mp => mp.Title == "A").Point;
+            var bPoint = _abcdFigure.Points.First(mp => mp.Title == "B").Point;
+            var cPoint = _abcdFigure.Points.First(mp => mp.Title == "C").Point;
+
+            double abLength = Math.Abs(aPoint.Y - bPoint.Y);
+            double bcLength = Math.Abs(bPoint.X - cPoint.X);
+
+            _rectSquare = abLength * bcLength;
         }
 
-        public double Execute(out long measuredTime)
+        public double Execute(out long measuredTime, out IEnumerable<Point> randPoints)
         {
             double S = 0;
+            IEnumerable<Point> randPointsLocal = null;
             measuredTime = TimeCalculation.MeasureTime(() =>
             {
-                var randPoints = GenerateRandPoints(_amountOfPoints);
-                S = GetAmountOfRandPointsInFigure(randPoints);
+                randPointsLocal = GenerateRandPoints(_amountOfPoints);
+                var pointsInFigure = GetAmountOfRandPointsInFigure(randPointsLocal);
+                S = ((double)pointsInFigure.Count() / _amountOfPoints) * _rectSquare;
                 _amountOfPoints *= _multiplier;
             });
+            randPoints = randPointsLocal;
             return S;
         }
 
         /// <summary>
         /// Определяет кол-во точек, попавших в фигуру
         /// </summary>
-        private int GetAmountOfRandPointsInFigure(IEnumerable<Point> points)
+        private IEnumerable<Point> GetAmountOfRandPointsInFigure(IEnumerable<Point> points)
         {
-            var amountPointsInFigure = 0;
-
-            var oPoint = _abcdFigure.Points.First(mp => mp.Title == "O").Point;
+            var oPoint = _aoeFigure.Points.First(mp => mp.Title == "O").Point;
             var ePoint = _aoeFigure.Points.First(mp => mp.Title == "E").Point;
             var aPoint = _aoeFigure.Points.First(mp => mp.Title == "A").Point;
 
@@ -64,7 +75,7 @@ namespace MonteKarloWPFApp1.Calcultion
                     var l = Math.Pow(Math.Pow(xOffset, 2) + Math.Pow(yOffset, 2), 0.5);
                     if (l < oeLength)
                     {
-                        amountPointsInFigure++; // Точка принадлежит 1/4 окружности
+                        yield return point; // Точка принадлежит 1/4 окружности
                     }
                 }
                 else
@@ -74,12 +85,10 @@ namespace MonteKarloWPFApp1.Calcultion
                     var m3 = (ePoint.X - point.X) * (oPoint.Y - ePoint.Y) - (oPoint.X - ePoint.X) * (ePoint.Y - point.Y);
                     if (CheckPointInTriangle(m1, m2, m3))
                     {
-                        amountPointsInFigure++; // Точка принадлежит треугольнику
+                        yield return point; // Точка принадлежит треугольнику
                     }
                 }
             }
-
-            return amountPointsInFigure;
         }
 
         private bool CheckPointInTriangle(int m1, int m2, int m3)

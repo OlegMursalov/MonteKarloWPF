@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace MonteKarloWPFApp1.Calcultion
 {
-    public class SquareCalculationByFormuls : IScuareCalculation
+    public class SquareCalculationByFormuls
     {
         private MyFigure _abcdFigure;
         private MyFigure _aoeFigure;

@@ -4,6 +4,6 @@
     {
         public double Square { get; set; }
         public double MeasuredTime { get; set; }
-        public int AmountOPoints { get; set; }
+        public int AmountOfPoints { get; set; }
     }
 }
