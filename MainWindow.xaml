@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:MonteKarloWPFApp1"
         mc:Ignorable="d"
         Title="MainWindow" Height="448.4" Width="712.8">
-    <Grid Margin="0,0,-60.4,-20">
+    <Grid Name="MainGrid"  Margin="0,0,-60.4,-20">
         <Button Content="Отрисовать фигуру" Name="DrawFigure" HorizontalAlignment="Left" Margin="499,125,0,0" VerticalAlignment="Top" Width="195" Height="40" Click="DrawFigure_Click"/>
         <Canvas RenderTransform="1 0 0 -1 0 0" Background="Pink" Name="MainCanvas" HorizontalAlignment="Left" Height="399" Margin="10,407,0,-386" VerticalAlignment="Top" Width="475"/>
         <Button Content="Выполнить расчеты" x:Name="MainCalc" HorizontalAlignment="Left" Margin="499,170,0,0" VerticalAlignment="Top" Width="195" Height="40" Click="MainCalc_Click"/>

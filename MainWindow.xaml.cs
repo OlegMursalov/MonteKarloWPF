@@ -2,8 +2,10 @@
 using MonteKarloWPFApp1.Consts;
 using MonteKarloWPFApp1.Drawing;
 using MonteKarloWPFApp1.DTO;
+using MonteKarloWPFApp1.Structure;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -15,9 +17,11 @@ namespace MonteKarloWPFApp1
     /// </summary>
     public partial class MainWindow : Window
     {
-        private DrawingDTO _drawingDTO;
-        private CalculationDTO _calculationDTO;
-        private ReportDTO _reportDTO;
+        internal DrawingDTO DrawingDTO { get; set; }
+        internal CalculationDTO CalculationDTO { get; set; }
+        internal ReportDTO ReportDTO { get; set; }
+
+        private BackgroundWorker _mainBackgroundWorker;
 
         public MainWindow()
         {
@@ -26,140 +30,29 @@ namespace MonteKarloWPFApp1
 
         private void DrawFigure_Click(object sender, RoutedEventArgs e)
         {
-            int bc, ab;
-            if (!(int.TryParse(BC.Text, out bc) && int.TryParse(AB.Text, out ab)))
-            {
-                MessageBox.Show(Strings.FormTextBoxesBC_AB_Msg_Str);
-                return;
-            }
-
-            int spaceLeft, spaceBottom;
-            if (!(int.TryParse(SpaceLeft.Text, out spaceLeft) && int.TryParse(SpaceBottom.Text, out spaceBottom)))
-            {
-                MessageBox.Show(Strings.FormSpacesMsg_Str);
-                return;
-            }
-
-            if (!(spaceLeft > 0 && spaceBottom > 0 && spaceLeft <= 20 && spaceBottom <= 20))
-            {
-                MessageBox.Show(Strings.FormSpaces_RestrictsMsg_Str);
-                return;
-            }
-
-            if (!(ab >= bc))
-            {
-                MessageBox.Show(Strings.ABIsntGreaterThanBC_Msg_Str);
-                return;
-            }
-
-            MainCanvas.Children.Clear();
-
-            var allPoints = new Dictionary<string, MyPoint>
-            {
-                { "A", new MyPoint(new Point(spaceLeft, spaceBottom), "A") },
-                { "B", new MyPoint(new Point(spaceLeft, spaceBottom + ab), "B") },
-                { "C", new MyPoint(new Point(spaceLeft + bc, spaceBottom + ab), "C") },
-                { "D", new MyPoint(new Point(spaceLeft + bc, spaceBottom), "D") },
-                { "O", new MyPoint(new Point(spaceLeft, spaceBottom + ab - bc), "O") },
-                { "E", new MyPoint(new Point(spaceLeft + bc, spaceBottom + ab - bc), "E") }
-            };
-
-            var colorFigure = GlobalParams.ColorFigure;
-            var scaleNumber = GlobalParams.ScaleNumber;
-            _drawingDTO = new DrawingDTO();
-
-            _drawingDTO.AbcdFigure = new MyFigure(new MyPoint[]
-            {
-                allPoints["A"],
-                allPoints["B"],
-                allPoints["C"],
-                allPoints["D"]
-            }, colorFigure);
-            var abcdFigureDrawer = new CustomDrawer(this, _drawingDTO.AbcdFigure, scaleNumber);
-            abcdFigureDrawer.DrawLines();
-
-            _drawingDTO.AoeFigure = new MyFigure(new MyPoint[]
-            {
-                allPoints["A"],
-                allPoints["O"],
-                allPoints["E"]
-            }, colorFigure);
-            var oaeDrawerFigure = new CustomDrawer(this, _drawingDTO.AoeFigure, scaleNumber);
-            oaeDrawerFigure.DrawLines();
-
-            _drawingDTO.BeArcFigure = new MyFigure(new MyPoint[]
-            {
-                allPoints["B"],
-                allPoints["E"],
-            }, colorFigure);
-            var beArcDrawerFigure = new CustomDrawer(this, _drawingDTO.BeArcFigure, scaleNumber);
-            beArcDrawerFigure.DrawArc();
-
-            _calculationDTO = null;
-            _reportDTO = null;
+            _mainBackgroundWorker = new BackgroundWorker();
+            var drawFigureControlWorkers = new DrawFigureControlWorkers(this);
+            _mainBackgroundWorker.DoWork += drawFigureControlWorkers.MainBackgroundWorker_DrawFigure_DoWork;
+            _mainBackgroundWorker.RunWorkerCompleted += drawFigureControlWorkers.MainBackgroundWorker_DrawFigure_RunWorkerCompleted;
+            _mainBackgroundWorker.RunWorkerAsync();
         }
 
-        private async void MainCalc_Click(object sender, RoutedEventArgs e)
+        private void MainCalc_Click(object sender, RoutedEventArgs e)
         {
-            await this.Dispatcher.InvokeAsync(() =>
-            {
-                if (_drawingDTO == null)
-                {
-                    MessageBox.Show(Strings.FigureIsntDrawed_Msg_Str);
-                    return;
-                }
-
-                _calculationDTO = new CalculationDTO();
-
-                var squareCalculationByFormuls = new SquareCalculationByFormuls(_drawingDTO.AbcdFigure, _drawingDTO.AoeFigure);
-                var sByFormuls = squareCalculationByFormuls.Execute(out long measuredTimeSByFormuls);
-                _calculationDTO.InfoByFormuls = new InfoByFormuls
-                {
-                    Square = sByFormuls,
-                    MeasuredTime = measuredTimeSByFormuls
-                };
-
-                var amountOfPointsMC = GlobalParams.InitialAmountOfPointsMC;
-                var multiplierMC = GlobalParams.MultiplierMC;
-                var squareCalculationByMonteCarlo = new SquareCalculationByMonteCarlo(_drawingDTO.AbcdFigure, _drawingDTO.AoeFigure, amountOfPointsMC, multiplierMC);
-
-                for (int i = 0; i < 5; i++)
-                {
-                    var sByMonteCarlo = squareCalculationByMonteCarlo.Execute(out long measuredTimeSByMonteCarlo, out IEnumerable<Point> randPoints);
-
-                    // CustomDrawer.DrawPoints(MainCanvas, GlobalParams.ScaleNumber, randPoints); // Рисование
-
-                    _calculationDTO.InfoByMonteCarlo.Add(new InfoByMonteCarlo
-                    {
-                        Square = sByMonteCarlo,
-                        MeasuredTime = measuredTimeSByMonteCarlo,
-                        AmountOfPoints = amountOfPointsMC
-                    });
-                    amountOfPointsMC *= multiplierMC;
-                }
-            });
+            _mainBackgroundWorker = new BackgroundWorker();
+            var mainCalcControlWorkers = new MainCalcControlWorkers(this);
+            _mainBackgroundWorker.DoWork += mainCalcControlWorkers.MainBackgroundWorker_MainCalc_DoWork;
+            _mainBackgroundWorker.RunWorkerCompleted += mainCalcControlWorkers.MainBackgroundWorker_MainCalc_RunWorkerCompleted;
+            _mainBackgroundWorker.RunWorkerAsync();
         }
 
         private void GetReport_Click(object sender, RoutedEventArgs e)
         {
-            if (_calculationDTO == null)
-            {
-                MessageBox.Show(Strings.CalcIsntExecuted_Msg_Str);
-                return;
-            }
-
-            var sb = new StringBuilder();
-            sb.AppendLine($"Отчет за {DateTime.Now}");
-            sb.AppendLine($"Площадь, вычисленная математически - {_calculationDTO.InfoByFormuls.Square}");
-            sb.AppendLine($"Время, потраченное на вычисление площади математически - {_calculationDTO.InfoByFormuls.MeasuredTime} мс");
-            sb.AppendLine($"Площадь, вычисленная методом Монте Карло:");
-            foreach (var item in _calculationDTO.InfoByMonteCarlo)
-            {
-                var offsetS = (Math.Abs(_calculationDTO.InfoByFormuls.Square - item.Square) / _calculationDTO.InfoByFormuls.Square) * 100;
-                sb.AppendLine($"Кол-во сгенерированых точек - {item.AmountOfPoints}, площадь - {item.Square}, время - {item.MeasuredTime} мс, погрешность - {offsetS} %");
-            }
-
-            MessageBox.Show(sb.ToString(), "Выполненные расчеты");
+            _mainBackgroundWorker = new BackgroundWorker();
+            var getReportControlWorkers = new GetReportControlWorkers(this);
+            _mainBackgroundWorker.DoWork += getReportControlWorkers.MainBackgroundWorker_GetReport_DoWork;
+            _mainBackgroundWorker.RunWorkerCompleted += getReportControlWorkers.MainBackgroundWorker_GetReport_RunWorkerCompleted;
+            _mainBackgroundWorker.RunWorkerAsync();
         }
     }
 }
