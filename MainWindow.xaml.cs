@@ -14,6 +14,7 @@ namespace MonteKarloWPFApp1
     {
         private DrawingDTO _drawingDTO;
         private CalculationDTO _calculationDTO;
+        private ReportDTO _reportDTO;
 
         public MainWindow()
         {
@@ -92,6 +93,7 @@ namespace MonteKarloWPFApp1
             beArcDrawerFigure.DrawArc();
 
             _calculationDTO = null;
+            _reportDTO = null;
         }
 
         private void MainCalc_Click(object sender, RoutedEventArgs e)
