@@ -72,8 +72,8 @@ namespace MonteKarloWPFApp1.Drawing
         {
             var points = _myFigure.Points.Select(i => i.Point);
             points = ScalePoints(points);
-            DrawLinesByPoints(points.ToArray());
-            DrawPointTitles(_myFigure.Points);
+            // DrawLinesByPoints(points.ToArray());
+            // DrawPointTitles(_myFigure.Points);
         }
 
         public void DrawArc()
@@ -99,14 +99,16 @@ namespace MonteKarloWPFApp1.Drawing
                     isSmoothJoin: false);
             }
 
-            var path = new Path
+            _mainWindow.Dispatcher.Invoke(() =>
             {
-                Stroke = _colorStroke,
-                StrokeThickness = 1,
-                Data = g
-            };
-
-            _mainWindow.Dispatcher.Invoke(() => _mainWindow.MainCanvas.Children.Add(path));
+                var path = new Path
+                {
+                    Stroke = _colorStroke,
+                    StrokeThickness = 1,
+                    Data = g
+                };
+                _mainWindow.Dispatcher.Invoke(() => _mainWindow.MainCanvas.Children.Add(path));
+            });
         }
 
         public static void DrawPoints(Dispatcher dispatcher, Canvas canvas, int scaleNumber, IEnumerable<Point> points)

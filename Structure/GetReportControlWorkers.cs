@@ -36,17 +36,17 @@ namespace MonteKarloWPFApp1.Structure
                 }
 
                 var sb = new StringBuilder();
-                sb.AppendLine($"Отчет за {DateTime.Now}");
-                sb.AppendLine($"Площадь, вычисленная математически - {_mainWindow.CalculationDTO.InfoByFormuls.Square}");
-                sb.AppendLine($"Время, потраченное на вычисление площади математически - {_mainWindow.CalculationDTO.InfoByFormuls.MeasuredTime} мс");
-                sb.AppendLine($"Площадь, вычисленная методом Монте Карло:");
+                sb.AppendLine(string.Format(Strings.StartReport_Str, DateTime.Now));
+                sb.AppendLine(string.Format(Strings.Report_S_ByFormuls_Str, _mainWindow.CalculationDTO.InfoByFormuls.Square));
+                sb.AppendLine(string.Format(Strings.Report_S_ByFormuls_MeasuredTime_Str, _mainWindow.CalculationDTO.InfoByFormuls.MeasuredTime));
+                sb.AppendLine(Strings.Report_S_ByMonteCarlo_Str);
                 foreach (var item in _mainWindow.CalculationDTO.InfoByMonteCarlo)
                 {
                     var offsetS = (Math.Abs(_mainWindow.CalculationDTO.InfoByFormuls.Square - item.Square) / _mainWindow.CalculationDTO.InfoByFormuls.Square) * 100;
-                    sb.AppendLine($"Кол-во сгенерированых точек - {item.AmountOfPoints}, площадь - {item.Square}, время - {item.MeasuredTime} мс, погрешность - {offsetS} %");
+                    sb.AppendLine(string.Format(Strings.Report_Info_Item_ForMonteCarlo_Str, item.AmountOfPoints, item.Square, item.MeasuredTime, offsetS));
                 }
 
-                MessageBox.Show(sb.ToString(), "Выполненные расчеты");
+                MessageBox.Show(sb.ToString(), Strings.EndReport_Str);
             });
         }
     }
