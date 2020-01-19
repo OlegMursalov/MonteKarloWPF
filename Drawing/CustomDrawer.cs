@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -11,14 +14,14 @@ namespace MonteKarloWPFApp1.Drawing
     public class CustomDrawer
     {
         private MyFigure _myFigure;
-        private MainWindow _mainWindow;
         private SolidColorBrush _colorStroke;
         private int _scaleNumber;
+        private MainWindow _mainWindow;
 
         public CustomDrawer(MainWindow mainWindow, MyFigure myFigure, int scaleNumber)
         {
-            _myFigure = myFigure;
             _mainWindow = mainWindow;
+            _myFigure = myFigure;
             _colorStroke = new SolidColorBrush(myFigure.ColorStroke);
             _scaleNumber = scaleNumber;
         }
@@ -28,23 +31,20 @@ namespace MonteKarloWPFApp1.Drawing
         /// </summary>
         private void DrawLinesByPoints(Point[] points)
         {
-            _mainWindow.Dispatcher.Invoke(() =>
+            for (int i = 0; i < points.Length; i++)
             {
-                for (int i = 0; i < points.Length; i++)
+                var p1 = points[i];
+                var p2 = i != points.Length - 1 ? points[i + 1] : points[0];
+                var line = new Line
                 {
-                    var p1 = points[i];
-                    var p2 = i != points.Length - 1 ? points[i + 1] : points[0];
-                    var line = new Line
-                    {
-                        X1 = p1.X,
-                        Y1 = p1.Y,
-                        X2 = p2.X,
-                        Y2 = p2.Y
-                    };
-                    line.Stroke = _colorStroke;
-                    _mainWindow.MainCanvas.Children.Add(line);
-                }
-            });
+                    X1 = p1.X,
+                    Y1 = p1.Y,
+                    X2 = p2.X,
+                    Y2 = p2.Y
+                };
+                line.Stroke = _colorStroke;
+                _mainWindow.MainCanvas.Children.Add(line);
+            }
         }
 
         private IEnumerable<Point> ScalePoints(IEnumerable<Point> points)
@@ -54,34 +54,37 @@ namespace MonteKarloWPFApp1.Drawing
 
         private void DrawPointTitles(MyPoint[] myPoints)
         {
-            _mainWindow.Dispatcher.Invoke(() =>
+            for (int i = 0; i < myPoints.Length; i++)
             {
-                for (int i = 0; i < myPoints.Length; i++)
-                {
-                    var textBlock = new TextBlock();
-                    textBlock.Text = myPoints[i].Title;
-                    textBlock.RenderTransform = new ScaleTransform { ScaleY = -1 };
-                    Canvas.SetLeft(textBlock, myPoints[i].Point.X * _scaleNumber);
-                    Canvas.SetTop(textBlock, myPoints[i].Point.Y * _scaleNumber);
-                    _mainWindow.MainCanvas.Children.Add(textBlock);
-                }
-            });
+                var textBlock = new TextBlock();
+                textBlock.Text = myPoints[i].Title;
+                textBlock.RenderTransform = new ScaleTransform { ScaleY = -1 };
+                Canvas.SetLeft(textBlock, myPoints[i].Point.X * _scaleNumber);
+                Canvas.SetTop(textBlock, myPoints[i].Point.Y * _scaleNumber);
+                _mainWindow.MainCanvas.Children.Add(textBlock);
+            }
         }
 
-        public void DrawLines()
+        /// <summary>
+        /// Обводит фигуру по контуру линиями (через точки)
+        /// </summary>
+        public void DrawFigureByLines()
         {
+            var uiElements = new List<UIElement>();
             var points = _myFigure.Points.Select(i => i.Point);
             points = ScalePoints(points);
-            // DrawLinesByPoints(points.ToArray());
-            // DrawPointTitles(_myFigure.Points);
+            DrawLinesByPoints(points.ToArray());
+            DrawPointTitles(_myFigure.Points);
         }
 
-        public void DrawArc()
+        /// <summary>
+        /// Рисует дугу с помощью 2х точек
+        /// </summary>
+        public void DrawFigureArc()
         {
             var bPoint = _myFigure.Points.First(mp => mp.Title == "B").Point;
             var ePoint = _myFigure.Points.First(mp => mp.Title == "E").Point;
             var arcSize = new System.Windows.Size(54, 78);
-
             var g = new StreamGeometry();
             using (var gc = g.Open())
             {
@@ -99,19 +102,17 @@ namespace MonteKarloWPFApp1.Drawing
                     isSmoothJoin: false);
             }
 
-            _mainWindow.Dispatcher.Invoke(() =>
+            var path = new Path
             {
-                var path = new Path
-                {
-                    Stroke = _colorStroke,
-                    StrokeThickness = 1,
-                    Data = g
-                };
-                _mainWindow.Dispatcher.Invoke(() => _mainWindow.MainCanvas.Children.Add(path));
-            });
+                Stroke = _colorStroke,
+                StrokeThickness = 1,
+                Data = g
+            };
+
+            _mainWindow.MainCanvas.Children.Add(path);
         }
 
-        public static void DrawPoints(Dispatcher dispatcher, Canvas canvas, int scaleNumber, IEnumerable<Point> points)
+        /*public static void DrawPoints(Canvas canvas, int scaleNumber, IEnumerable<Point> points)
         {
             foreach (var point in points)
             {
@@ -121,8 +122,8 @@ namespace MonteKarloWPFApp1.Drawing
                 ellipse.Stroke = new SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 0, 0));
                 Canvas.SetLeft(ellipse, point.X * scaleNumber);
                 Canvas.SetTop(ellipse, point.Y * scaleNumber);
-                dispatcher.Invoke(() => canvas.Children.Add(ellipse));
+                canvas.Children.Add(ellipse);
             }
-        }
+        }*/
     }
 }

@@ -1,11 +1,13 @@
 ﻿using MonteKarloWPFApp1.Calcultion;
 using MonteKarloWPFApp1.Consts;
-using MonteKarloWPFApp1.Drawing;
 using MonteKarloWPFApp1.DTO;
 using MonteKarloWPFApp1.UIHelpers;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Text;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace MonteKarloWPFApp1.Structure
 {
@@ -20,32 +22,13 @@ namespace MonteKarloWPFApp1.Structure
 
         public void MainBackgroundWorker_MainCalc_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            _mainWindow.ReportDTO = null;
+            var formBlocker = new FormBlocker(_mainWindow);
+            formBlocker.Execute(isDisabled: false);
+            _mainWindow.MainCalcProgressBar.Value = 0;
         }
 
         public void MainBackgroundWorker_MainCalc_DoWork(object sender, DoWorkEventArgs e)
         {
-            var isQuit = false;
-
-            var formBlocker = new FormBlocker(_mainWindow);
-            formBlocker.Equals(true);
-
-            _mainWindow.Dispatcher.Invoke(() =>
-            {
-                if (_mainWindow.DrawingDTO == null)
-                {
-                    MessageBox.Show(Strings.FigureIsntDrawed_Msg_Str);
-                    isQuit = true;
-                }
-            });
-
-            if (isQuit)
-            {
-                return;
-            }
-
-            _mainWindow.CalculationDTO = new CalculationDTO();
-
             var squareCalculationByFormuls = new SquareCalculationByFormuls(_mainWindow.DrawingDTO.AbcdFigure, _mainWindow.DrawingDTO.AoeFigure);
             var sByFormuls = squareCalculationByFormuls.Execute(out long measuredTimeSByFormuls);
             _mainWindow.CalculationDTO.InfoByFormuls = new InfoByFormuls
@@ -54,6 +37,8 @@ namespace MonteKarloWPFApp1.Structure
                 MeasuredTime = measuredTimeSByFormuls
             };
 
+            _mainWindow.Dispatcher.Invoke(() => _mainWindow.MainCalcProgressBar.Value += 15);
+
             var amountOfPointsMC = GlobalParams.InitialAmountOfPointsMC;
             var multiplierMC = GlobalParams.MultiplierMC;
             var squareCalculationByMonteCarlo = new SquareCalculationByMonteCarlo(_mainWindow.DrawingDTO.AbcdFigure, _mainWindow.DrawingDTO.AoeFigure, amountOfPointsMC, multiplierMC);
@@ -61,9 +46,6 @@ namespace MonteKarloWPFApp1.Structure
             for (int i = 0; i < 5; i++)
             {
                 var sByMonteCarlo = squareCalculationByMonteCarlo.Execute(out long measuredTimeSByMonteCarlo, out IEnumerable<Point> randPoints);
-
-                CustomDrawer.DrawPoints(_mainWindow.Dispatcher, _mainWindow.MainCanvas, GlobalParams.ScaleNumber, randPoints); // Рисование
-
                 _mainWindow.CalculationDTO.InfoByMonteCarlo.Add(new InfoByMonteCarlo
                 {
                     Square = sByMonteCarlo,
@@ -71,6 +53,8 @@ namespace MonteKarloWPFApp1.Structure
                     AmountOfPoints = amountOfPointsMC
                 });
                 amountOfPointsMC *= multiplierMC;
+
+                _mainWindow.Dispatcher.Invoke(() => _mainWindow.MainCalcProgressBar.Value += 15);
             }
         }
     }

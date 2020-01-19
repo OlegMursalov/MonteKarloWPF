@@ -6,6 +6,9 @@ namespace MonteKarloWPFApp1.UIHelpers
     {
         private MainWindow _mainWindow;
 
+        /// <summary>
+        /// Блокировщик всех controls on form
+        /// </summary>
         public FormBlocker(MainWindow mainWindow)
         {
             _mainWindow = mainWindow;
@@ -18,7 +21,7 @@ namespace MonteKarloWPFApp1.UIHelpers
                 var uiElement = item as UIElement;
                 if (uiElement != null)
                 {
-                    uiElement.IsEnabled = isDisabled;
+                    uiElement.IsEnabled = !isDisabled;
                 }
             }
         }

@@ -64,9 +64,8 @@
     <Compile Include="Drawing\MyFigure.cs" />
     <Compile Include="Drawing\MyPoint.cs" />
     <Compile Include="Consts\Strings.cs" />
-    <Compile Include="Structure\GetReportControlWorkers.cs" />
-    <Compile Include="Structure\DrawFigureControlWorkers.cs" />
     <Compile Include="Structure\MainCalcControlWorkers.cs" />
+    <Compile Include="Structure\GetReportControlWorkers.cs" />
     <Compile Include="UIHelpers\FormBlocker.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
