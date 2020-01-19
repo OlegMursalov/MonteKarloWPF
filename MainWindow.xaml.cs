@@ -74,7 +74,7 @@ namespace MonteKarloWPFApp1
             var formBlocker = new FormBlocker(this);
             formBlocker.Execute(isDisabled: true);
 
-            var colorFigure = GlobalParams.ColorFigure;
+            var colorFigure = GlobalParams.FigureColor;
             var scaleNumber = GlobalParams.ScaleNumber;
             
             DrawingDTO.AbcdFigure = new MyFigure(new MyPoint[]

@@ -12,7 +12,7 @@ namespace MonteKarloWPFApp1.Consts
         /// <summary>
         /// Цвет фигуры
         /// </summary>
-        public static readonly Color ColorFigure = Color.FromRgb(51, 78, 255);
+        public static readonly Color FigureColor = Color.FromRgb(51, 78, 255);
 
         /// <summary>
         /// Начальное значение кол-ва точек для вычисления площади фигуры методом Монте-Карло
@@ -23,5 +23,10 @@ namespace MonteKarloWPFApp1.Consts
         /// Множитель для вычисления площади фигуры методом Монте-Карло
         /// </summary>
         public static readonly int MultiplierMC = 10;
+
+        /// <summary>
+        /// Цвет срандомленной точки
+        /// </summary>
+        public static readonly Color RandColorPoint = Color.FromRgb(0, 0, 0);
     }
 }

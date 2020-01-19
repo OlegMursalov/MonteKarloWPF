@@ -1,7 +1,6 @@
 C:\Users\Олег\source\repos\MonteKarloWPFApp1\MonteKarloWPFApp1\bin\Debug\MonteKarloWPFApp1.exe.config
 C:\Users\Олег\source\repos\MonteKarloWPFApp1\MonteKarloWPFApp1\bin\Debug\MonteKarloWPFApp1.exe
 C:\Users\Олег\source\repos\MonteKarloWPFApp1\MonteKarloWPFApp1\bin\Debug\MonteKarloWPFApp1.pdb
-C:\Users\Олег\source\repos\MonteKarloWPFApp1\MonteKarloWPFApp1\obj\Debug\MonteKarloWPFApp1.csprojAssemblyReference.cache
 C:\Users\Олег\source\repos\MonteKarloWPFApp1\MonteKarloWPFApp1\obj\Debug\MainWindow.g.cs
 C:\Users\Олег\source\repos\MonteKarloWPFApp1\MonteKarloWPFApp1\obj\Debug\App.g.cs
 C:\Users\Олег\source\repos\MonteKarloWPFApp1\MonteKarloWPFApp1\obj\Debug\MonteKarloWPFApp1_MarkupCompile.cache

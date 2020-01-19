@@ -112,18 +112,27 @@ namespace MonteKarloWPFApp1.Drawing
             _mainWindow.MainCanvas.Children.Add(path);
         }
 
-        /*public static void DrawPoints(Canvas canvas, int scaleNumber, IEnumerable<Point> points)
+        public static void DrawPoints(Canvas canvas, int scaleNumber, IEnumerable<Point> points, SolidColorBrush pointColor, int howMuchFlag)
         {
+            var i = 0;
             foreach (var point in points)
             {
-                var ellipse = new Ellipse();
-                ellipse.Width = 1;
-                ellipse.Height = 1;
-                ellipse.Stroke = new SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 0, 0));
-                Canvas.SetLeft(ellipse, point.X * scaleNumber);
-                Canvas.SetTop(ellipse, point.Y * scaleNumber);
-                canvas.Children.Add(ellipse);
+                if (i < howMuchFlag)
+                {
+                    var ellipse = new Ellipse();
+                    ellipse.Width = 1;
+                    ellipse.Height = 1;
+                    ellipse.Stroke = pointColor;
+                    Canvas.SetLeft(ellipse, point.X * scaleNumber);
+                    Canvas.SetTop(ellipse, point.Y * scaleNumber);
+                    canvas.Children.Add(ellipse);
+                }
+                else
+                {
+                    break;
+                }
+                i++;
             }
-        }*/
+        }
     }
 }
